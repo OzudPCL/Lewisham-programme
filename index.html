@@ -72,8 +72,8 @@
 
   map.addControl(new mapboxgl.NavigationControl());
 
-  // Move all label layers (e.g., road/place names) to the top
   map.on('load', () => {
+    // Move label layers to top
     const layers = map.getStyle().layers;
     for (const layer of layers) {
       if (layer.id.toLowerCase().includes('label')) {
@@ -83,6 +83,42 @@
           console.warn('Could not move layer:', layer.id);
         }
       }
+    }
+
+    // Tooltip popup
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+
+    // Map of layer IDs to friendly hover names
+    const layerHoverNames = {
+      'lewisham-wards': 'Wards',
+      'review-areas-lewisham-sustainabl': 'Existing areas reviewed',
+      'review-areas-lewisham-sustainain': 'Existing areas reviewed',
+      'phase1-completed-areas-sustainab': 'Phase 1 delivered',
+      'phase-1-completed-catford-sust': 'Phase 1 delivered',
+      'brockley-march-2025-cdyyva': 'Phase 2a Brockley',
+      'brockley-december-2024': 'Phase 2a Brockley',
+      'hgl-2025': 'Phase 2b CSHGL',
+      'cs-april-2025': 'Phase 2b CSHGL',
+      'catford-south-2025': 'Phase 2b CSHGL',
+      'phase-3-updated copy': 'Phase 3 April 2025'
+    };
+
+    // Set up hover events
+    for (const [layerId, label] of Object.entries(layerHoverNames)) {
+      map.on('mousemove', layerId, (e) => {
+        map.getCanvas().style.cursor = 'pointer';
+        popup.setLngLat(e.lngLat)
+             .setHTML(`<strong>${label}</strong>`)
+             .addTo(map);
+      });
+
+      map.on('mouseleave', layerId, () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+      });
     }
   });
 </script>
