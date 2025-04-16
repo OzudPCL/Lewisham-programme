@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Map with Sustainable Streets Programme Legend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+    .legend {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 10px;
+      font-family: sans-serif;
+      font-size: 11px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      max-width: 220px;
+    }
+
+    .legend-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .legend div.legend-item {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .legend span {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+      border-radius: 2px;
+      border: 1px solid #555;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Top-left legend -->
+<div class="legend" id="legend">
+  <div class="legend-title">Sustainable Streets Programme</div>
+  <div class="legend-item"><span style="background-color: rgba(255, 15, 15, 0.8);"></span> Wards</div>
+  <div class="legend-item"><span style="background-color: #ff05da;"></span> Existing areas reviewed</div>
+  <div class="legend-item"><span style="background-color: rgba(251, 91, 91, 0.8);"></span> Areas excluded</div>
+  <div class="legend-item"><span style="background-color: rgba(32, 209, 254, 0.8);"></span> Phase 1 delivered</div>
+  <div class="legend-item"><span style="background-color: rgba(250, 209, 25, 0.8);"></span> Phase 2a Brockley</div>
+  <div class="legend-item"><span style="background-color: rgba(210, 251, 60, 0.8);"></span> Phase 2b CSHGL</div>
+  <div class="legend-item"><span style="background-color: rgba(10, 242, 2, 0.8);"></span> Phase 3 April 2025</div>
+</div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoicHJvamVjdGNlbnRyZSIsImEiOiJja3o4OW9zYmowM3YwMm9tcWF0MTRtc3VyIn0.ns_jCyc8s6t6CS1w8SK6QQ';
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/projectcentre/cm9jue5pl006t01s565i1fner',
+    center: [-0.03, 51.47],
+    zoom: 12
+  });
+
+  map.addControl(new mapboxgl.NavigationControl());
+
+  // Move all label layers (e.g., road/place names) to the top
+  map.on('load', () => {
+    const layers = map.getStyle().layers;
+    for (const layer of layers) {
+      if (layer.id.toLowerCase().includes('label')) {
+        try {
+          map.moveLayer(layer.id);
+        } catch (e) {
+          console.warn('Could not move layer:', layer.id);
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
